@@ -2,12 +2,13 @@ module.exports = function(grunt) {
     grunt.initConfig({
         browserify : {
             worker : {
-                src : ['src/worker_main.js'],
-                dest : 'src/worker_main.temp.js'
+                files : {
+                    'src/worker_main.temp.js' : ['src/worker_main.js']
+                }
             }
         },
-        'string-replace' : {
-            default : {
+        "string-replace" : {
+            browser : {
                 files : {
                     'index.js' : ['src/browser_file.js']
                 },
@@ -15,28 +16,41 @@ module.exports = function(grunt) {
                     replacements : [{
                         pattern : 'reallyUniqueName',
                         replacement : function() {
-                            return encodeURI(grunt.file.read('src/worker_main.temp.js', {encoding: 'utf8'}));
+                            return grunt.file.read('src/worker_main.temp.js');
                         }
+                    }]
+                }
+            },
+            worker : {
+                files : {
+                    'src/worker_main.temp.js' : ['src/worker_main.temp.js']
+                },
+                options : {
+                    replacements : [{
+                        pattern : /\"/g ,
+                        replacement :  '\\\"'
                     }]
                 }
             }
         },
         uglify : {
-            browser : {
-                src : ['index.js'],
-                dest : 'index.js',
+            worker : {
+                files : {
+                    'src/worker_main.temp.js' : ['src/worker_main.temp.js']
+                },
                 options : {
                     mangle : {
-                        reserved : ['require', 'module', 'exports', 'onmessage', 'postMessage']
+                        reserved : ['require', 'module', 'exports', 'postMessage', 'onmessage']
                     }
                 }
             },
-            worker : {
-                src : ['src/worker_main.temp.js'],
-                dest : 'src/worker_main.temp.js',
+            browser : {
+                files : {
+                    'index.js' : ['index.js']
+                },
                 options : {
                     mangle : {
-                        reserved : ['require', 'module', 'exports', 'onmessage', 'postMessage']
+                        reserved : ['require', 'module', 'exports', 'postMessage', 'onmessage']
                     }
                 }
             }
@@ -47,8 +61,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-uglify-es');
 
-    grunt.registerTask('compile', ['browserify:worker', 'uglify:worker', 'string-replace', 'uglify:browser', 'delete:worker']);
-    grunt.registerTask('compile-dev', ['browserify:worker', 'string-replace', 'delete:worker'])
+    grunt.registerTask('compile', ['browserify:worker', 'uglify:worker', 'string-replace:worker', 'string-replace:browser', 'uglify:browser', 'delete:worker-temp']);
 
     grunt.registerTask(
         'delete',
@@ -56,7 +69,7 @@ module.exports = function(grunt) {
         function(subtask) {
             subtask = subtask || 'default'
             switch (subtask) {
-                case 'worker':
+                case 'worker-temp':
                     grunt.file.delete('src/worker_main.temp.js');
                     break;
                 default:
