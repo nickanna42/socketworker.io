@@ -2,7 +2,7 @@
 
 const ioworker = function(socketURL, socketOptions) {
     const workerURI = new Blob([decodeURIComponent("reallyUniqueName")], {type : 'application/javascript'});
-    return ioworker.Socket(workerURI, socketURL, socketOptions)
+    return new ioworker.Socket(workerURI, socketURL, socketOptions)
 };
 
 ioworker.Socket = class socketworker {
