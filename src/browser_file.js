@@ -20,7 +20,6 @@ ioworker.Socket = class socketworker {
         });
         self.ackFunctions = {}; // key: ackId value: function
         self.onHandlers  = {}; // key: eventname value: Array of functions
-        self.id = null;
 
         self.worker.onmessage = function(e) {
             switch (e.data.type) {
@@ -32,6 +31,7 @@ ioworker.Socket = class socketworker {
                     break;
                 case 'on_cb':
                     if (self.onHandlers[e.data.eventname]) {
+                        console.log('has listeners!')
                         self.onHandlers[e.data.eventname]
                         .forEach(function(currentHandler) {
                             currentHandler(e.data.content);
@@ -53,7 +53,7 @@ ioworker.Socket = class socketworker {
             const ackFunc = argumentsArray.pop();
             let tempKey = null;
             do {
-                tempKey = Math.floor(Math.random()*100000).toString();
+                tempKey = Math.floor(Math.random()*100000).toString(16);
             } while (
                 Object.keys(self.ackFunctions).indexOf(tempKey) != -1
             );
@@ -81,7 +81,7 @@ ioworker.Socket = class socketworker {
             self.onHandlers[currentEventName].push(currentOnCb);
             self.worker.postMessage({
                 type : 'on',
-                eventName : arguments[0]
+                eventname : currentEventName
             });
         } else {
             throw new TypeError('.on() passed bad params');

@@ -23,7 +23,7 @@ onmessage = function(e) {
                     postMessage({
                         type : 'on_cb',
                         eventname : 'connect_error',
-                        content : error
+                        content : error.toString()
                     });
                 })
                 socket.on('connect_timeout', function(timeout) {
@@ -37,7 +37,7 @@ onmessage = function(e) {
                     postMessage({
                         type : 'on_cb',
                         eventname: 'error',
-                        contnet : error
+                        contnet : error.toString()
                     });
                 });
                 socket.on('disconnect', function(reason) {
@@ -72,7 +72,7 @@ onmessage = function(e) {
                     postMessage({
                         type : 'on_cb',
                         eventname : 'reconnect_error',
-                        content : attempt
+                        content : error.toString()
                     });
                 });
                 socket.on('reconnect_failed', function() {
@@ -114,12 +114,19 @@ onmessage = function(e) {
                 }
             case 'on':
                 if (socket !== null) {
-                    socket.on(e.data.eventname, function(inboundMsg) {
-                        postMessage({
-                            type : 'on_cb',
-                            eventname : e.data.eventname,
-                            content : inboundMsg
+                    if (socket.listeners(e.data.eventname).length == 0) {
+                        socket.on(e.data.eventname, function(inboundMsg) {
+                            postMessage({
+                                type : 'on_cb',
+                                eventname : e.data.eventname,
+                                content : inboundMsg
+                            });
                         });
+                    }
+                } else {
+                    postMessage({
+                        type : 'error',
+                        content : 'socket isnt connected'
                     });
                 }
                 break;
