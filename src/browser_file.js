@@ -3,7 +3,7 @@
 module.exports = function(socketURL, socketOptions) {
     const workerURI = new Blob([decodeURIComponent("reallyUniqueName")], {type : 'application/javascript'});
 
-    class socketworker {
+    this.Socket = class socketworker {
         constructor(workerURI, socketURL, socketOptions) {
             const self = this;
             socketURL = socketURL || '/';
@@ -99,5 +99,5 @@ module.exports = function(socketURL, socketOptions) {
         }
     }
 
-    return new socketworker(workerURI, socketURL, socketOptions)
+    return new this.Socket(workerURI, socketURL, socketOptions)
 };
