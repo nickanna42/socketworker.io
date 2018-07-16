@@ -1,33 +1,40 @@
 //client file
 
 module.exports = function(socketURL, socketOptions) {
-    const workerURI = new Blob(decodeURI("reallyUniqueName"), {type : 'application/javascript'});
+    const workerURI = new Blob(decodeURI("reallyUniqueName", {type : 'application/javascript'}));
 
     class socketworker {
         constructor(workerURI, socketURL, socketOptions) {
+            const self = this;
             socketURL = socketURL || '/';
             socketOptions = socketOptions || {};
-            this.worker = new Worker(workerURI);
-            this.worker.postMessage({
+            self.worker = new Worker(workerURI);
+            self.worker.postMessage({
                 type : 'make_connect',
                 content : [socketURL, socketOptions]
             });
-            this.ackFunctions = {}; // key: ackId value: function
-            this.onHandlers  = {}; // key: eventname value: Array of functions
+            self.ackFunctions = {}; // key: ackId value: function
+            self.onHandlers  = {}; // key: eventname value: Array of functions
+            self.id = null;
 
-            this.worker.onmessage = function(e) {
+            self.worker.onmessage = function(e) {
                 switch (e.data.type) {
                     case 'error':
                         throw new Error(e.data.content);
-                    case 'ack_cb':
-                        this.ackFunctions[e.data.ackId](e.data.content);
-                        delete this.ackFunctions[e.data.ackId];
+                    case 'emit_cb':
+                        self.ackFunctions[e.data.ackId](e.data.content);
+                        delete self.ackFunctions[e.data.ackId];
                         break;
                     case 'on_cb':
-                        this.onHandlers[e.data.eventname]
-                        .forEach(function(currentHandler) {
-                            currentHandler(e.data.content);
-                        });
+                        if (self.onHandlers[e.data.eventname]) {
+                            self.onHandlers[e.data.eventname]
+                            .forEach(function(currentHandler) {
+                                currentHandler(e.data.content);
+                            });
+                        }
+                        break;
+                    case 'id':
+                        self.id = e.data.content;
                         break;
                 }
             };
@@ -74,6 +81,21 @@ module.exports = function(socketURL, socketOptions) {
             } else {
                 throw new TypeError('.on() passed bad params');
             }
+        }
+
+        send() {
+            arguments = Array.from(arguments);
+            this.emit('message', ...arguments);
+        }
+
+        close() {
+            postMessage({
+                type : 'close'
+            });
+        }
+
+        disconnect() {
+            this.close();
         }
     }
 
