@@ -16,22 +16,11 @@ module.exports = function(grunt) {
                     replacements : [{
                         pattern : 'reallyUniqueName',
                         replacement : function() {
-                            return grunt.file.read('src/worker_main.temp.js');
+                            return encodeURIComponent(grunt.file.read('src/worker_main.temp.js'));
                         }
                     }]
                 }
             },
-            worker : {
-                files : {
-                    'src/worker_main.temp.js' : ['src/worker_main.temp.js']
-                },
-                options : {
-                    replacements : [{
-                        pattern : /\"/g ,
-                        replacement :  '\\\"'
-                    }]
-                }
-            }
         },
         uglify : {
             worker : {
@@ -61,7 +50,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-uglify-es');
 
-    grunt.registerTask('compile', ['browserify:worker', 'uglify:worker', 'string-replace:worker', 'string-replace:browser', 'uglify:browser', 'delete:worker-temp']);
+    grunt.registerTask('compile', ['browserify:worker', 'uglify:worker', 'string-replace:browser', 'uglify:browser', 'delete:worker-temp']);
 
     grunt.registerTask(
         'delete',
