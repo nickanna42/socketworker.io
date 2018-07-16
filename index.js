@@ -9,6 +9,9 @@ ioworker.Socket = class socketworker {
     constructor(workerURI, socketURL, socketOptions) {
         const self = this;
         socketURL = socketURL || '/';
+        if (socketURL[0] == '/') {
+            socketURL = window.location.protocol + '//' + window.location.host + socketURL;
+        }
         socketOptions = socketOptions || {};
         self.worker = new Worker(URL.createObjectURL(workerURI));
         self.worker.postMessage({
