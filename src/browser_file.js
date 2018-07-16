@@ -8,7 +8,7 @@ module.exports = function(socketURL, socketOptions) {
             const self = this;
             socketURL = socketURL || '/';
             socketOptions = socketOptions || {};
-            self.worker = new Worker(workerURI);
+            self.worker = new Worker(URL.createObjectURL(workerURI));
             self.worker.postMessage({
                 type : 'make_connect',
                 content : [socketURL, socketOptions]
