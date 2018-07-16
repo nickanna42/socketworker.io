@@ -31,7 +31,6 @@ ioworker.Socket = class socketworker {
                     break;
                 case 'on_cb':
                     if (self.onHandlers[e.data.eventname]) {
-                        console.log('has listeners!')
                         self.onHandlers[e.data.eventname]
                         .forEach(function(currentHandler) {
                             currentHandler(e.data.content);

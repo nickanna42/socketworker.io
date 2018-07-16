@@ -50,7 +50,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-string-replace');
     grunt.loadNpmTasks('grunt-contrib-uglify-es');
 
-    grunt.registerTask('compile', ['browserify:worker', /*uglify:worker',*/ 'string-replace:browser', /*'uglify:browser',*/ 'delete:worker-temp']);
+    grunt.registerTask('compile', ['browserify:worker', 'uglify:worker', 'string-replace:browser', 'uglify:browser', 'delete:worker-temp']);
 
     grunt.registerTask(
         'delete',
