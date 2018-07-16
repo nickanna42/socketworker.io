@@ -48,6 +48,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify-es');
 
     grunt.registerTask('compile', ['browserify:worker', 'uglify:worker', 'string-replace', 'uglify:browser', 'delete:worker']);
+    grunt.registerTask('compile-dev', ['browserify:worker', 'string-replace', 'delete:worker'])
 
     grunt.registerTask(
         'delete',
