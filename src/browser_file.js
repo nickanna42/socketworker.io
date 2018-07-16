@@ -84,8 +84,8 @@ module.exports = function(socketURL, socketOptions) {
         }
 
         send() {
-            arguments = Array.from(arguments);
-            this.emit('message', ...arguments);
+            const argumentsArray = Array.from(arguments);
+            this.emit('message', ...argumentsArray);
         }
 
         close() {
