@@ -1,7 +1,7 @@
 //client file
 
 module.exports = function(socketURL, socketOptions) {
-    const workerURI = new Blob(decodeURIComponent("reallyUniqueName"), {type : 'application/javascript'});
+    const workerURI = new Blob([decodeURIComponent("reallyUniqueName")], {type : 'application/javascript'});
 
     class socketworker {
         constructor(workerURI, socketURL, socketOptions) {
